@@ -13,4 +13,3 @@ inf = json.loads(r2)
 print('El identificador del producto es:', inf['results'][0]['id'])
 print('El propósito del producto es:', inf['results'][0]['purpose'][0])
 print('El producto ha sido fabricado por:', inf['results'][0]['openfda']['manufacturer_name'][0])
-jj
