@@ -43,7 +43,7 @@ def process_client(clientsocket):
     """
     a = 0
     for elem in inf['results']:
-        if elem['openfda'] and a<=10:
+        if elem['openfda'] and a<10:
             a += 1
             print("El medicamento es:", elem['openfda']['generic_name'][0])
             contenido += (elem['openfda']['generic_name'][0] + "</br>")
