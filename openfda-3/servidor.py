@@ -12,7 +12,7 @@ MAX_OPEN_REQUESTS = 5
 headers = {'User-Agent': 'http-client'}
 
 conn = http.client.HTTPSConnection("api.fda.gov")
-conn.request("GET", "/drug/label.json?&limit=11", None, headers)
+conn.request("GET", "/drug/label.json?&limit=10", None, headers)
 r1 = conn.getresponse()
 r2 = r1.read().decode("utf-8")
 conn.close()
@@ -44,10 +44,9 @@ def process_client(clientsocket):
     for elem in inf['results']:
         if elem['openfda']:
             print("El medicamento es:", elem['openfda']['generic_name'][0])
-            contenido += (elem['openfda']['generic_name'][0] + "\n")
-            contenido +="</br></body></html>"
+            contenido += (elem['openfda']['generic_name'][0] + "</br>")
+            #contenido +="</br></body></html>"
         else:
-            print("Desconocido, no existen datos")
             continue
 
 
