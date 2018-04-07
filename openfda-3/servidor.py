@@ -48,7 +48,7 @@ def process_client(clientsocket):
             #contenido +="</br></body></html>"
         else:
             continue
-
+    contenido += "</body></html>"
 
 
     # Creamos el mensaje de respuesta. Tiene que ser un mensaje en
