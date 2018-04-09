@@ -5,8 +5,8 @@ import json
 
 
 # Configuracion del servidor: IP, Puerto
-IP = "192.168.0.172"
-PORT = 8051
+IP = "212.128.255.130"
+PORT = 8052
 MAX_OPEN_REQUESTS = 5
 
 headers = {'User-Agent': 'http-client'}
