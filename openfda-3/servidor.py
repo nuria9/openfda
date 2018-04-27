@@ -6,7 +6,7 @@ import json
 
 # Configuracion del servidor: IP, Puerto
 IP = "212.128.255.130"
-PORT = 8052
+PORT = 8049
 MAX_OPEN_REQUESTS = 5
 
 headers = {'User-Agent': 'http-client'}
@@ -63,7 +63,7 @@ def process_client(clientsocket):
     # Cuerpo (contenido a enviar)
 
     # -- Indicamos primero que todo OK. Cualquier peticion, aunque sea
-    # -- incorrecta nos va bien (somos un servidor cutre...)
+    # -- incorrecta nos va bien
     linea_inicial = "HTTP/1.1 200 OK\n"
     cabecera = "Content-Type: text/html\n"
     cabecera += "Content-Length: {}\n".format(len(str.encode(contenido)))
