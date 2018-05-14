@@ -6,7 +6,7 @@ import socketserver
 
 
 IP = "212.128.254.150"
-PORT = 8079
+PORT = 8071
 MAX_OPEN_REQUESTS = 5
 
 headers = {'User-Agent': 'http-client'}
@@ -30,12 +30,18 @@ def process_client(clientsocket):
       <body style='background-color: lightpink'>
         <h1>Bienvenido </h1>
         <h2>Elija una opcion</h2>
+        <ul>
+        <li>Ingrediente activo</li>
+        <li>Empresas</li>
+        <li>Listado de farmacos</li>
+        <li>Listado de empresas</li>
+        </ul>
         
         
       </body>
       </html>
     """
-    contenido += input("Hola")
+    contenido += print(str(input("Hola")))
     a = 0
     for elem in inf['results']:
         if elem['openfda'] and a<10:
