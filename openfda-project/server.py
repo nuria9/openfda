@@ -35,13 +35,14 @@ def process_client(clientsocket):
         <li>Empresas</li>
         <li>Listado de farmacos</li>
         <li>Listado de empresas</li>
+        <input type="text" name="">
         </ul>
         
         
       </body>
       </html>
     """
-    contenido += print(str(input("Hola")))
+
     a = 0
     for elem in inf['results']:
         if elem['openfda'] and a<10:
