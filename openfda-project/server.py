@@ -6,7 +6,7 @@ import socketserver
 
 
 IP = "212.128.254.150"
-PORT = 8047
+PORT = 8037
 MAX_OPEN_REQUESTS = 5
 
 headers = {'User-Agent': 'http-client'}
@@ -32,17 +32,17 @@ def process_client(clientsocket):
         <h2>Elija una opcion</h2>
         
     <br>
-        <input type="radio" name="opcion" value="Ingrediente activo">Ingrediente activo<br>
-        <input type="radio" name="opcion" value="Empresas">Empresas<br>
-        <input type="radio" name="opcion" value="Listado de farmacos">Listado de farmacos<br>
-        <input type="radio" name="opcion" value="Listado de empresas">Listado de empresas<br>
+        <form action="/searchDrugs">
+            <input type="radio" name="opcion" value="Ingrediente activo">Ingrediente activo<br>
+        </form>
+            <input type="radio" name="opcion" value="Empresas">Empresas<br>
+            <input type="radio" name="opcion" value="Listado de farmacos">Listado de farmacos<br>
+            <input type="radio" name="opcion" value="Listado de empresas">Listado de empresas<br>
         
         
       </body>
       </html>
     """
-    if "opcion" == "Ingrediente activo":
-        contenido += print("correcto")
 
 
 
