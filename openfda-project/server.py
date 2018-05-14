@@ -1,17 +1,18 @@
 import socket
 import http.client
 import json
-import Flask
+import socketserver
 
 
-IP = "212.128.255.130"
-PORT = 8049
+
+IP = "212.128.254.150"
+PORT = 8080
 MAX_OPEN_REQUESTS = 5
 
 headers = {'User-Agent': 'http-client'}
 
 conn = http.client.HTTPSConnection("api.fda.gov")
-conn.request("GET", "/drug/label.json/?search=active_ingredient:", name , None, headers)
+conn.request("GET", "/drug/label.json", None, headers)
 r1 = conn.getresponse()
 r2 = r1.read().decode("utf-8")
 conn.close()
@@ -27,7 +28,7 @@ def process_client(clientsocket):
       <!doctype html>
       <html>
       <body style='background-color: lightgreen'>
-        <h1>Hola, estos son los 10 medicamentos!</h2>
+        <h1>Bienvenido elija una opción</h2>
       </body>
       </html>
     """
@@ -51,9 +52,13 @@ def process_client(clientsocket):
     clientsocket.send(mensaje_respuesta)
     clientsocket.close()
 
+serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+socketserver.TCPServer.allow_reuse_address = True
+
 
 try:
-
+    serversocket.bind((IP, PORT))
+    serversocket.listen(MAX_OPEN_REQUESTS)
     while True:
 
         print("Esperando clientes en IP: {}, Puerto: {}".format(IP, PORT))
