@@ -6,7 +6,7 @@ import socketserver
 
 
 IP = "212.128.254.150"
-PORT = 8080
+PORT = 8079
 MAX_OPEN_REQUESTS = 5
 
 headers = {'User-Agent': 'http-client'}
@@ -27,9 +27,9 @@ def process_client(clientsocket):
     contenido = """
       <!doctype html>
       <html>
-      <body style='background-color: lightgreen'>
+      <body style='background-color: lightpink'>
         <h1>Bienvenido </h1>
-        <h2>Elija una opción</h2>
+        <h2>Elija una opcion</h2>
         
         
       </body>
