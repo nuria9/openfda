@@ -3,10 +3,11 @@ import http.client
 import http.server
 import json
 
+#socketserver.TCPServer.allow_reuse_address = True
 
 # Configuracion del servidor: IP, Puerto
 IP = "212.128.255.130"
-PORT = 8049
+PORT = 1111
 MAX_OPEN_REQUESTS = 5
 
 headers = {'User-Agent': 'http-client'}
