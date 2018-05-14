@@ -6,7 +6,7 @@ import socketserver
 
 
 IP = "212.128.254.150"
-PORT = 8071
+PORT = 8047
 MAX_OPEN_REQUESTS = 5
 
 headers = {'User-Agent': 'http-client'}
@@ -30,29 +30,20 @@ def process_client(clientsocket):
       <body style='background-color: lightpink'>
         <h1>Bienvenido </h1>
         <h2>Elija una opcion</h2>
-        <ul>
-        <li>Ingrediente activo</li>
-        <li>Empresas</li>
-        <li>Listado de farmacos</li>
-        <li>Listado de empresas</li>
-        <input type="text" name="">
-        </ul>
+        
+    <br>
+        <input type="radio" name="opcion" value="Ingrediente activo">Ingrediente activo<br>
+        <input type="radio" name="opcion" value="Empresas">Empresas<br>
+        <input type="radio" name="opcion" value="Listado de farmacos">Listado de farmacos<br>
+        <input type="radio" name="opcion" value="Listado de empresas">Listado de empresas<br>
         
         
       </body>
       </html>
     """
+    if "opcion" == "Ingrediente activo":
+        contenido += print("correcto")
 
-    a = 0
-    for elem in inf['results']:
-        if elem['openfda'] and a<10:
-            a += 1
-            print("El medicamento es:", elem['openfda']['generic_name'][0])
-            contenido += (elem['openfda']['generic_name'][0] + "</br>")
-        else:
-            if a <10: continue
-            else: break
-    contenido += "</body></html>"
 
 
     linea_inicial = "HTTP/1.1 200 OK\n"
