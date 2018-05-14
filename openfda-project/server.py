@@ -35,6 +35,7 @@ def process_client(clientsocket):
       </body>
       </html>
     """
+    contenido += input("Hola")
     a = 0
     for elem in inf['results']:
         if elem['openfda'] and a<10:
