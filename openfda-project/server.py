@@ -2,6 +2,7 @@ import http.server
 import http.client
 import socketserver
 import json
+import requests
 
 PORT = 8000
 INDEX_FILE = "index.html"
@@ -71,19 +72,31 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
 
         return html
 
-    def do_Empresas1(self):
+    def do_Empresas1(self,empresa):
+        conn = http.client.HTTPSConnection("api.fda.gov")
+        conn.request("GET", "/drug/label.json?&limit=100", None,
+                     headers)
+        r1 = conn.getresponse()
+
+        r2 = r1.read().decode("utf-8")
+        conn.close()
+
+        inf = json.loads(r2)
+        d = []
+        for element in inf['results']:
+            if element['openfda']:
+                d.append(element['openfda']['manufacturer_name'][0])
+
+            else:
+                continue
         html = """
-            <ul> 
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            </ul> """
+                               <h1> Las empresas que contienen su busqueda son: </h1><br>
+                               """
+        for item in d:
+            if item.find(empresa) != -1:
+                html += "<li>" + item + "</li>"
+        html += """
+                               </ul>"""
 
         return html
 
@@ -159,7 +172,7 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
         if opcion == "Ingrediente":
             consulta = self.do_Ingrediente(ingrediente)
         elif opcion == "Empresas1":
-            consulta = self.do_Empresas1()
+            consulta = self.do_Empresas1(ingrediente)
         elif opcion == "Empresas2":
             consulta = self.do_Empresas2()
         elif opcion == "Farmacos":
