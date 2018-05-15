@@ -45,20 +45,29 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
                        """
         return html
 
-    def do_Ingrediente(self):
+    def do_Ingrediente(self,principioActivo):
+        conn = http.client.HTTPSConnection("api.fda.gov")
+        conn.request("GET", "/drug/label.json/?search=active_ingredient:" + principioActivo +"&limit=100", None, headers)
+        r1 = conn.getresponse()
+
+        r2 = r1.read().decode("utf-8")
+        conn.close()
+
+        inf = json.loads(r2)
+        b = []
+        for element in inf['results']:
+            if element['openfda']:
+                b.append(element['openfda']['substance_name'][0])
+            else:
+                continue
         html = """
-            <<ul> 
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            </ul> """
+                       <h1> Los medicamentos con el principio activo deseado son: </h1><br>
+                       """
+        for item in b:
+            html += "<li>" + item + "</li>"
+        html += """
+                       </ul>"""
+
         return html
 
     def do_Empresas1(self):
@@ -106,13 +115,11 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
         a = []
         for element in inf['results']:
             if element['openfda']:
-                print("1")
                 a.append(element['openfda']['substance_name'][0])
             else:
                 continue
-        print(a)
         html = """
-                <h1> La informacion buscada es: </h1>
+                <h1> La informacion buscada es: </h1><br>
                 """
         for item in a:
             html += "<li>" + item + "</li>"
@@ -140,7 +147,7 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
 
 
         if opcion == "Ingrediente":
-            consulta = self.do_Ingrediente()
+            consulta = self.do_Ingrediente(ingrediente)
         elif opcion == "Empresas1":
             consulta = self.do_Empresas1()
         elif opcion == "Empresas2":
