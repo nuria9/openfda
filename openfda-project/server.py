@@ -36,7 +36,7 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
                                  </input>
                                  <input type="radio" name="opcion" value="Empresas2">Listado de empresas<br><br>
                                  </input>     
-                                 <input type=text name ="ingr" value= "activo"><br><br>
+                                 <input type=text name ="ingr" value= ""><br><br>
                                  </input>
                                  <input type="submit" value= "Enviar">
                                  </input>
