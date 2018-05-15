@@ -23,8 +23,10 @@ inf = json.loads(r2)
 
 def process_client(clientsocket):
 
-    mensaje_solicitud = clientsocket.recv(1024)
+    mensaje_solicitud = str(clientsocket.recv(1024))
     print(mensaje_solicitud)
+    type(mensaje_solicitud)
+
 
     contenido = """
       <!doctype html>
@@ -56,8 +58,6 @@ def process_client(clientsocket):
     clientsocket.close()
 
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-socketserver.TCPServer.allow_reuse_address = True
-
 
 try:
     serversocket.bind((IP, PORT))
@@ -74,6 +74,8 @@ try:
 except socket.error:
     print("Problemas usando el puerto {}".format(PORT))
     print("Lanzalo en otro puerto (y verifica la IP)")
+    socketserver.TCPServer.allow_reuse_address = True
+
 
 
 
