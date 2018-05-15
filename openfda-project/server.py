@@ -57,16 +57,21 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
 
         inf = json.loads(r2)
         b = []
-        for element in inf['results']:
-            if element['openfda']:
-                b.append(element['openfda']['substance_name'][0])
-            else:
-                continue
+        if 'results' in inf:
+            for element in inf['results']:
+                if element['openfda']:
+                    b.append(element['openfda']['substance_name'][0])
+                else:
+                    continue
+
         html = """
                        <h1> Los medicamentos con el principio activo deseado son: </h1><br>
                        """
-        for item in b:
-            html += "<li>" + item + "</li>"
+        if 'results' in inf:
+            for item in b:
+                html += "<li>" + item + "</li>"
+        else:
+            html += "<li>" + "No hay resultados" + "</li>"
         html += """
                        </ul>"""
 
@@ -83,18 +88,23 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
 
         inf = json.loads(r2)
         d = []
-        for element in inf['results']:
-            if element['openfda']:
-                d.append(element['openfda']['manufacturer_name'][0])
+        if 'results' in inf:
+            for element in inf['results']:
+                if element['openfda']:
+                    d.append(element['openfda']['manufacturer_name'][0])
 
-            else:
-                continue
+                else:
+                    continue
         html = """
                                <h1> Las empresas que contienen su busqueda son: </h1><br>
                                """
-        for item in d:
-            if item.find(empresa) != -1:
-                html += "<li>" + item + "</li>"
+        if 'results' in inf:
+            for item in d:
+                if item.find(empresa) != -1:
+                    html += "<li>" + item + "</li>"
+        else:
+            html += "<li>" + "No se han encontrado resultados" + "</li>"
+
         html += """
                                </ul>"""
 
