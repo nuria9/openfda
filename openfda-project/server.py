@@ -29,16 +29,17 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
                            <form> 
                                  <input type="radio" name="opcion" value="Ingrediente" checked>Ingrediente activo
                                  </input>
-                                 <input type=text name ="ingr" value= "activo"><br>
+                                 <input type="radio" name="opcion" value="Empresas1">Empresas
                                  </input>
-                                 <input type="radio" name="opcion" value="Empresas1">Empresas<br>
+                                 <input type="radio" name="opcion" value="Farmacos">Listado de farmacos
                                  </input>
-                                 <input type="radio" name="opcion" value="Farmacos">Listado de farmacos<br>
-                                 </input>
-                                 <input type="radio" name="opcion" value="Empresas2">Listado de empresas<br>
+                                 <input type="radio" name="opcion" value="Empresas2">Listado de empresas<br><br>
                                  </input>     
+                                 <input type=text name ="ingr" value= "activo"><br><br>
+                                 </input>
                                  <input type="submit" value= "Enviar">
                                  </input>
+                                 
                            </form>
 
                        
@@ -87,20 +88,29 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
         return html
 
     def do_Empresas2(self):
+        conn = http.client.HTTPSConnection("api.fda.gov")
+        conn.request("GET", "/drug/label.json?&limit=100", None,
+                     headers)
+        r1 = conn.getresponse()
 
+        r2 = r1.read().decode("utf-8")
+        conn.close()
+
+        inf = json.loads(r2)
+        c = []
+        for element in inf['results']:
+            if element['openfda']:
+                c.append(element['openfda']['manufacturer_name'][0])
+            else:
+                c.append("Desconocida")
         html = """
-            <ul> 
-            <li>hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            </ul> """
+                <h1> Listado de empresas: </h1><br>
+                """
+        for item in c:
+            html += "<li>" + item + "</li>"
+        html += """
+                </ul>"""
+
         return html
 
     def do_Farmacos(self):
