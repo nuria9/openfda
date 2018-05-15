@@ -4,9 +4,11 @@ import json
 import socketserver
 
 
+socketserver.TCPServer.allow_reuse_address = True
 
-IP = "212.128.254.150"
-PORT = 8037
+IP = "127.0.0.1"
+PORT = 8000
+
 MAX_OPEN_REQUESTS = 5
 
 headers = {'User-Agent': 'http-client'}
@@ -22,7 +24,7 @@ inf = json.loads(r2)
 def process_client(clientsocket):
 
     mensaje_solicitud = clientsocket.recv(1024)
-
+    print(mensaje_solicitud)
 
     contenido = """
       <!doctype html>
@@ -32,13 +34,12 @@ def process_client(clientsocket):
         <h2>Elija una opcion</h2>
         
     <br>
-        <form action="/searchDrugs">
+        <form 
             <input type="radio" name="opcion" value="Ingrediente activo">Ingrediente activo<br>
-        </form>
             <input type="radio" name="opcion" value="Empresas">Empresas<br>
             <input type="radio" name="opcion" value="Listado de farmacos">Listado de farmacos<br>
-            <input type="radio" name="opcion" value="Listado de empresas">Listado de empresas<br>
-        
+            <input type="radio" name="opcion" value="Listado de empresas">Listado de empresas<br>     
+            <input type="submit" value= "Enviar">
         
       </body>
       </html>
