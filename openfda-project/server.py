@@ -1,83 +1,163 @@
-import socket
+import http.server
 import http.client
-import json
 import socketserver
+import json
 
-
+PORT = 8000
+INDEX_FILE = "index.html"
 socketserver.TCPServer.allow_reuse_address = True
 
-IP = "127.0.0.1"
-PORT = 8000
 
-MAX_OPEN_REQUESTS = 5
-
+NOMBRE_APIREST = "api.fda.gov"
+DIR_APIREST = "/drug/label.json"
 headers = {'User-Agent': 'http-client'}
 
-conn = http.client.HTTPSConnection("api.fda.gov")
-conn.request("GET", "/drug/label.json", None, headers)
-r1 = conn.getresponse()
-r2 = r1.read().decode("utf-8")
-conn.close()
+CERRAR = "</body></html>"
 
-inf = json.loads(r2)
-
-def process_client(clientsocket):
-
-    mensaje_solicitud = str(clientsocket.recv(1024))
-    print(mensaje_solicitud)
-    type(mensaje_solicitud)
+class ManejaRequest(http.server.BaseHTTPRequestHandler):
 
 
-    contenido = """
-      <!doctype html>
-      <html>
-      <body style='background-color: lightpink'>
-        <h1>Bienvenido </h1>
-        <h2>Elija una opcion</h2>
+    def paginaPrincipal (self):
+        html = """
+                   <html>
+                       <head>
+                           <title>Bienvenido!!</title>
+                       </head>
+                       <body align=center style='background-color: lightpink'>
+                           <h1>Elija una opcion </h1>
+                           <br>
+                           <form> 
+                                 <input type="radio" name="opcion" value="Ingrediente" checked>Ingrediente activo
+                                 <input type=text value= "Introduca ingrediente activo"><br>
+                                 </input>
+                                 <input type="radio" name="opcion" value="Empresas1">Empresas<br>
+                                 </input>
+                                 <input type="radio" name="opcion" value="Farmacos">Listado de farmacos<br>
+                                 </input>
+                                 <input type="radio" name="opcion" value="Empresas2">Listado de empresas<br>
+                                 </input>     
+                                 <input type="submit" value= "Enviar">
+                                 </input>
+                           </form>
+
+                       
+                       """
+        return html
+
+    def do_Ingrediente(self):
+        html = """
+            <<ul> 
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            </ul> """
+
+    def do_Empresas1(self):
+        html = """
+            <ul> 
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            </ul> """
+
+        return html
+
+    def do_Empresas2(self):
+        html = """
+            <ul> 
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            </ul> """
+        return html
+
+    def do_Farmacos(self):
+        html = """
+            <ul> 
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1
+            hola farmaco1 
+            </ul> """
+        return html
+            
         
-    <br>
-        <form 
-            <input type="radio" name="opcion" value="Ingrediente activo">Ingrediente activo<br>
-            <input type="radio" name="opcion" value="Empresas">Empresas<br>
-            <input type="radio" name="opcion" value="Listado de farmacos">Listado de farmacos<br>
-            <input type="radio" name="opcion" value="Listado de empresas">Listado de empresas<br>     
-            <input type="submit" value= "Enviar">
-        
-      </body>
-      </html>
-    """
 
 
 
-    linea_inicial = "HTTP/1.1 200 OK\n"
-    cabecera = "Content-Type: text/html\n"
-    cabecera += "Content-Length: {}\n".format(len(str.encode(contenido)))
+    def do_GET(self):
+        opcion = "principal"
+        lista_respuesta = self.path.split("?")
+        print(lista_respuesta)
+        if len(lista_respuesta) > 1:
+            parametros = lista_respuesta[1].split("=")
+            nombre, valor = parametros[0], parametros[1]
+            opcion = parametros[1]
+            print(nombre, ' y ', valor)
 
-    mensaje_respuesta = str.encode(linea_inicial + cabecera + "\n" + contenido)
-    clientsocket.send(mensaje_respuesta)
-    clientsocket.close()
+        else:
+            parametros = ""
 
-serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+        if opcion == "Ingrediente":
+            consulta = self.do_Ingrediente()
+        elif opcion == "Empresas1":
+            consulta = self.do_Empresas1()
+        elif opcion == "Empresas2":
+            consulta = self.do_Empresas2()
+        elif opcion == "Farmacos":
+            consulta = self.do_Farmacos()
+        else:
+            consulta = ""
+
+        message = self.paginaPrincipal() + consulta + "</body></html>"
+        self.send_response(200)
+
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+
+        self.wfile.write(bytes(message, "utf8"))
+
+
+#------------------------------------#
+
+socketserver.TCPServer.allow_reuse_address = True
+# Handler = http.server.SimpleHTTPRequestHandler
+Handler = ManejaRequest
+# es una instancia de una clase q se encarga de responde a las peticciones http que puede venir de dos sitios, un ordenador o el test de la practica
+
+httpd = socketserver.TCPServer(("", PORT), Handler)
+print("Sirviendo en el puerto:", PORT)
 try:
-    serversocket.bind((IP, PORT))
-    serversocket.listen(MAX_OPEN_REQUESTS)
-    while True:
+    httpd.serve_forever()
+except KeyboardInterrupt:
+    print("El usuario ha interrumpido el servidor en el puerto:", PORT)
+    print("Reanudelo de nuevo")
 
-        print("Esperando clientes en IP: {}, Puerto: {}".format(IP, PORT))
-        (clientsocket, address) = serversocket.accept()
-
-
-        print("  Peticion de cliente recibida. IP: {}".format(address))
-        process_client(clientsocket)
-
-except socket.error:
-    print("Problemas usando el puerto {}".format(PORT))
-    print("Lanzalo en otro puerto (y verifica la IP)")
-    socketserver.TCPServer.allow_reuse_address = True
-
-
-
-
-
-
+print("Servidor parado")
