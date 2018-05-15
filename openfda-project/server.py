@@ -28,7 +28,8 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
                            <br>
                            <form> 
                                  <input type="radio" name="opcion" value="Ingrediente" checked>Ingrediente activo
-                                 <input type=text value= "Introduca ingrediente activo"><br>
+                                 </input>
+                                 <input type=text name ="ingr" value= "activo"><br>
                                  </input>
                                  <input type="radio" name="opcion" value="Empresas1">Empresas<br>
                                  </input>
@@ -58,6 +59,7 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
             hola farmaco1
             hola farmaco1
             </ul> """
+        return html
 
     def do_Empresas1(self):
         html = """
@@ -76,9 +78,10 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
         return html
 
     def do_Empresas2(self):
+
         html = """
             <ul> 
-            hola farmaco1
+            <li>hola farmaco1
             hola farmaco1
             hola farmaco1
             hola farmaco1
@@ -92,35 +95,46 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
         return html
 
     def do_Farmacos(self):
+        conn = http.client.HTTPSConnection("api.fda.gov")
+        conn.request("GET", "/drug/label.json?&limit=100", None, headers)
+        r1 = conn.getresponse()
+
+        r2 = r1.read().decode("utf-8")
+        conn.close()
+
+        inf = json.loads(r2)
+        a = []
+        for element in inf['results']:
+            if element['openfda']:
+                print("1")
+                a.append(element['openfda']['substance_name'][0])
+            else:
+                continue
+        print(a)
         html = """
-            <ul> 
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1
-            hola farmaco1 
-            </ul> """
+                <h1> La informacion buscada es: </h1>
+                """
+        for item in a:
+            html += "<li>" + item + "</li>"
+        html += """
+                </ul>"""
+
         return html
             
-        
 
 
 
     def do_GET(self):
+        consulta =""
         opcion = "principal"
         lista_respuesta = self.path.split("?")
         print(lista_respuesta)
         if len(lista_respuesta) > 1:
-            parametros = lista_respuesta[1].split("=")
-            nombre, valor = parametros[0], parametros[1]
-            opcion = parametros[1]
-            print(nombre, ' y ', valor)
-
+            parametros = lista_respuesta[1].split("&")
+            opcion = parametros[0].split("=")[1]
+            ingrediente = parametros[1].split("=")[1]
+            print("opcion: ", opcion)
+            print("ingrediente: ", ingrediente)
         else:
             parametros = ""
 

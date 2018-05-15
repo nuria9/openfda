@@ -18,3 +18,4 @@ for element in inf['results']:
         print("  El fabricante es:" , element['openfda']['manufacturer_name'][0],"\n")
     else:
         print("  Fabricante desconocido\n")
+
