@@ -5,9 +5,8 @@ import json
 import requests
 
 PORT = 8000
-INDEX_FILE = "index.html"
-socketserver.TCPServer.allow_reuse_address = True
 
+socketserver.TCPServer.allow_reuse_address = True
 
 NOMBRE_APIREST = "api.fda.gov"
 DIR_APIREST = "/drug/label.json"
@@ -15,10 +14,10 @@ headers = {'User-Agent': 'http-client'}
 
 CERRAR = "</body></html>"
 
+
 class ManejaRequest(http.server.BaseHTTPRequestHandler):
 
-
-    def paginaPrincipal (self):
+    def paginaPrincipal(self):
         html = """
                    <html>
                        <head>
@@ -27,29 +26,30 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
                        <body align=center style='background-color: lightpink'>
                            <h1>Elija una opcion </h1>
                            <br>
-                           <form> 
-                                 <input type="radio" name="opcion" value="Ingrediente" checked>Ingrediente activo
-                                 </input>
-                                 <input type="radio" name="opcion" value="Empresas1">Empresas
-                                 </input>
-                                 <input type="radio" name="opcion" value="Farmacos">Listado de farmacos
-                                 </input>
-                                 <input type="radio" name="opcion" value="Empresas2">Listado de empresas<br><br>
-                                 </input>     
-                                 <input type=text name ="ingr" value= ""><br><br>
-                                 </input>
-                                 <input type="submit" value= "Enviar">
-                                 </input>
-                                 
+                           <form action = "/searchDrug">
+                                 <input type="submit" value = "Buscar por ingediente"></input>
+                                 <input type="text" name="active_ingredient" value=""><br><br></input>
                            </form>
+                           <form action = "/searchCompany">
+                                 <input type="submit" value = "Buscar empresas"></input>
+                                 <input type="text" name="company" value=""></input>
+                           </form>
+                           <form action ="/listDrugs">
+                                 <input type="submit" value="Listado de farmacos"></input>
+                           </form>
+                           <form action = "/listCompanies">
+                                 <input type="submit" value="Listado de empresas"></input>     
+                           </form>
+                           <form action ="/">
+                                <input type="submit" value="Menu principal"></input>
 
-                       
                        """
         return html
 
-    def do_Ingrediente(self,principioActivo):
+    def do_Ingrediente(self, principioActivo):
         conn = http.client.HTTPSConnection("api.fda.gov")
-        conn.request("GET", "/drug/label.json/?search=active_ingredient:" + principioActivo +"&limit=100", None, headers)
+        conn.request("GET", "/drug/label.json/?search=active_ingredient:" + principioActivo + "&limit=100", None,
+                     headers)
         r1 = conn.getresponse()
 
         r2 = r1.read().decode("utf-8")
@@ -77,7 +77,7 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
 
         return html
 
-    def do_Empresas1(self,empresa):
+    def do_Empresas1(self, empresa):
         conn = http.client.HTTPSConnection("api.fda.gov")
         conn.request("GET", "/drug/label.json?&limit=100", None,
                      headers)
@@ -148,44 +148,42 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
         a = []
         for element in inf['results']:
             if element['openfda']:
-                a.append(element['openfda']['substance_name'][0])
+                a.append(element['openfda']['generic_name'][0])
             else:
                 continue
         html = """
                 <h1> La informacion buscada es: </h1><br>
                 """
-        for item in a:
-            html += "<li>" + item + "</li>"
+        if 'results' in inf:
+            for item in a:
+                html += "<li>" + item + "</li>"
+        else:
+            html += "<li>" + "No hay resultados" + "</li>"
+
         html += """
                 </ul>"""
 
         return html
-            
-
-
 
     def do_GET(self):
-        consulta =""
-        opcion = "principal"
+        consulta = ""
+        opcion = ""
         lista_respuesta = self.path.split("?")
         print(lista_respuesta)
-        if len(lista_respuesta) > 1:
-            parametros = lista_respuesta[1].split("&")
-            opcion = parametros[0].split("=")[1]
-            ingrediente = parametros[1].split("=")[1]
-            print("opcion: ", opcion)
-            print("ingrediente: ", ingrediente)
-        else:
-            parametros = ""
+        busqueda = lista_respuesta[0]
+        print("La busqueda es: ",busqueda)
 
-
-        if opcion == "Ingrediente":
-            consulta = self.do_Ingrediente(ingrediente)
-        elif opcion == "Empresas1":
-            consulta = self.do_Empresas1(ingrediente)
-        elif opcion == "Empresas2":
+        if busqueda == "/searchDrug":
+            parametros = lista_respuesta[1].split("=")
+            opcion = parametros[1]
+            consulta = self.do_Ingrediente(opcion)
+        elif busqueda == "/searchCompany":
+            parametros = lista_respuesta[1].split("=")
+            opcion = parametros[1]
+            consulta = self.do_Empresas1(opcion)
+        elif busqueda == "/listCompanies":
             consulta = self.do_Empresas2()
-        elif opcion == "Farmacos":
+        elif busqueda == "/listDrugs":
             consulta = self.do_Farmacos()
         else:
             consulta = ""
@@ -199,7 +197,7 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
         self.wfile.write(bytes(message, "utf8"))
 
 
-#------------------------------------#
+# ------------------------------------#
 
 socketserver.TCPServer.allow_reuse_address = True
 # Handler = http.server.SimpleHTTPRequestHandler
