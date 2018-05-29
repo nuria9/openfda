@@ -60,9 +60,9 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
         if 'results' in inf:
             for element in inf['results']:
                 if element['openfda']:
-                    b.append(element['openfda']['substance_name'][0])
+                    b.append(element['openfda']['generic_name'][0])
                 else:
-                    continue
+                    b.append("Medicamento desconocido")
 
         html = """
                        <h1> Los medicamentos con el principio activo deseado son: </h1><br>
