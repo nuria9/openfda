@@ -83,6 +83,7 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
 
 
         html = """
+                       <body align=center style='background-color: lightpink'>
                        <h1> Los medicamentos con el principio activo deseado son: </h1><br><ul>
                        """
         if 'results' in inf:
@@ -106,26 +107,30 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
 
         inf = json.loads(r2)
         d = []
-        contador = 0
         if 'results' in inf:
             for element in inf['results']:
-                contador += 1
-                if contador <= limit:
-                    if element['openfda']:
-                        d.append(element['openfda']['manufacturer_name'][0])
-
-                    else:
-                        d.append("Empresa desconocida")
+                if element['openfda']:
+                    d.append(element['openfda']['manufacturer_name'][0])
                 else:
-                    break
+                    d.append("Empresa desconocida")
+
+
 
         html = """
+                               <body align=center style='background-color: lightpink'>
                                <h1> Las empresas que contienen su busqueda son: </h1><br><ul>
                                """
+        contador = 0
         if 'results' in inf:
             for item in d:
                 if item.find(empresa) != -1:
-                    html += "<li>" + item + "</li>"
+                    contador += 1
+                    if contador<= limit:
+                        html += "<li>" + item + "</li>"
+                    else:
+                        break
+
+
 
 
         else:
@@ -159,6 +164,7 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
                 else:
                     break
         html = """
+                <body align=center style='background-color: lightpink'>
                 <h1> Listado de empresas: </h1><br><ul>
                 """
         if 'results' in inf:
@@ -185,20 +191,31 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
         for element in inf['results']:
             contador += 1
             if contador <= limit:
-                if 'warnings' in inf['results']:
+                print("0")
+                try:
+                    element['warnings']
                     e.append(element['warnings'][0])
-                else:
-                    e.append("Se desconocen las advertencias")
+                except KeyError:
+                    try:
+                        element['warnings_and_cautions']
+                        e.append(element['warnings_and_cautions'][0])
+                    except KeyError:
+                        e.append("Se desconocen las advertencias")
             else:
                 break
+
+                #if element['warnings']:
+                #    e.append(element['warnings'][0])
+                #elif element['warnings_and_cautions']:
+                #    e.append(element['warnings_and_cautions'][0])
+                #else:
+                #    e.append("Se desconocen las advertencias")
         html = """
+                        <body align=center style='background-color: lightpink'>
                         <h1> Atencion: </h1><br><ul>
                         """
-        if 'results' in inf:
-            for item in e:
-                html += "<li>" + item + "</li>"
-        else:
-            html += "<li>" + "No hay resultados" + "</li>"
+        for item in e:
+            html += "<li>" + item + "</li>"
 
         html += """
                         </ul>"""
@@ -225,6 +242,7 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
             else:
                 break
         html = """
+                <body align=center style='background-color: lightpink'>
                 <h1> La informacion buscada es: </h1><br><ul>
                 """
         if 'results' in inf:
@@ -256,22 +274,26 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
         if busqueda == "/searchDrug":
             parametros = lista_respuesta[1].split("&")
             opcion = parametros[0].split("=")[1]
-            limite = parametros[1].split("=")[1]
-            if limite != "":
-                limit = int(limite)
+            if len(parametros) == 2:
+                limite = parametros[1].split("=")[1]
+                if limite != "":
+                    limit = int(limite)
+                else:
+                        limit = 1
             else:
                 limit = 1
-            print("El limite es: ",limit)
             consulta = self.do_Ingrediente(opcion,limit)
         elif busqueda == "/searchCompany":
             parametros = lista_respuesta[1].split("&")
             opcion = parametros[0].split("=")[1]
-            limite = parametros[1].split("=")[1]
-            if limite != "":
-                limit = int(limite)
+            if len(parametros) == 2:
+                limite = parametros[1].split("=")[1]
+                if limite != "":
+                    limit = int(limite)
+                else:
+                    limit = 1
             else:
                 limit = 1
-            print("El limite es: ",limit)
             consulta = self.do_Empresas1(opcion,limit)
         elif busqueda == "/listCompanies":
             limite = lista_respuesta[1].split("=")[1]
@@ -279,7 +301,6 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
                 limit = int(limite)
             else:
                 limit = 1
-            print("El limite es: ",limit)
             consulta = self.do_Empresas2(limit)
         elif busqueda == "/listDrugs":
             limite = lista_respuesta[1].split("=")[1]
@@ -287,7 +308,6 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
                 limit = int(limite)
             else:
                 limit = 1
-            print("El limite es: ",limit)
             consulta = self.do_Farmacos(limit)
         elif busqueda == "/listWarnings":
             limite = lista_respuesta[1].split("=")[1]
@@ -295,12 +315,19 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
                 limit = int(limite)
             else:
                 limit = 1
-            print("El limite es :",limit)
             consulta = self.listWarnings(limit)
+        elif busqueda =="/":
+            consulta = self.paginaPrincipal()
         else:
-            consulta = ""
+            consulta = """
+                <body align=center style='background-color: lightpink'>
+                <h1>ERROR 404 </h1>
+                <p>El recurso solicitado no se encuentra en el servidor</p>
+                
+             """
 
-        message = self.paginaPrincipal() + consulta + "</body></html>"
+
+        message = consulta + "</body></html>"
         self.send_response(200)
 
         self.send_header('Content-type', 'text/html')
