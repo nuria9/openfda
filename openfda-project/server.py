@@ -10,11 +10,8 @@ PORT = 8000
 socketserver.TCPServer.allow_reuse_address = True
 
 
-NOMBRE_APIREST = "api.fda.gov"
-DIR_APIREST = "/drug/label.json"
 headers = {'User-Agent': 'http-client'}
 
-CERRAR = "</body></html>"
 
 class ManejaRequest(http.server.BaseHTTPRequestHandler):
 
@@ -254,21 +251,14 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
         html += """
                 </ul>"""
         return html
-            
-
-
 
     def do_GET(self):
         consulta =""
         opcion = ""
+        print(self.path)
         lista_respuesta = self.path.split("?")
         print(lista_respuesta)
         busqueda = lista_respuesta[0]
-        #if len(lista_respuesta) > 1:
-        #    parametros = lista_respuesta[1].split("=")
-        #    opcion = parametros[1]
-        #else:
-        #    parametros = ""
 
 
         if busqueda == "/searchDrug":
@@ -318,13 +308,24 @@ class ManejaRequest(http.server.BaseHTTPRequestHandler):
             consulta = self.listWarnings(limit)
         elif busqueda =="/":
             consulta = self.paginaPrincipal()
+      
+        elif busqueda == "/redirect":
+            path = "/"
+            self.send_response(302)
+            new_path ='%s%s'%('http://127.0.0.1:8000',path)
+            self.send_header('Location',new_path)
+            self.end_headers()
         else:
+            self.send_response(404)
+
             consulta = """
+            <html>
                 <body align=center style='background-color: lightpink'>
                 <h1>ERROR 404 </h1>
-                <p>El recurso solicitado no se encuentra en el servidor</p>
+                <h2>El recurso solicitado no se encuentra en el servidor</h2>
                 
              """
+
 
 
         message = consulta + "</body></html>"
